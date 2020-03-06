@@ -1,12 +1,14 @@
 
 import { createDrawerNavigator } from 'react-navigation-drawer';
 
-import ScreenOne from '../Components/Screens/Screen1';
-import ScreenTwo from '../Components/Screens/Screen2';
+import FullButton from '../Components/Screens/FullButton';
+import CardList from '../Components/Screens/CardList';
+import News from '../Pages/News';
 
 const DrawerNavigator = createDrawerNavigator({
-  One: ScreenOne,
-  Two: ScreenTwo
+  News: News,
+  FullBtn: FullButton,
+  CardList: CardList
 });
 
 export default DrawerNavigator;
