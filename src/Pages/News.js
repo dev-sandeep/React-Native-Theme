@@ -1,43 +1,72 @@
 import React, {useState, useEffect} from 'react'
 import Header from './../Components/Header'
-import { Container, Content, Card, CardItem, Text, Body, Grid, Col } from "native-base";
+import { Item, Label, Icon, Form, Input, Button, Text, Spinner } from "native-base";
 import CardComp from '../Components/Card'
-import {SafeAreaView, StatusBar, View, ScrollView} from 'react-native' 
+import {View, ScrollView} from 'react-native' 
+import axios from 'react-native-axios'
+import CustomCard from './../Components/CustomCard'
+import { toastShow } from '../Utility/Common'
 
-const News = () => {
+const News = (props) => {
     const API_KEY = '0dc8ac7f0e564f7a98de3c56a0d9c640';
-    const url = 'http://newsapi.org/v2/top-headlines?country=in&category=business&apiKey='+API_KEY;
-    
+    let url = 'http://newsapi.org/v2/top-headlines?country=in&category=business&apiKey='+API_KEY;
+
     let [data, setData] = useState([]);
-    useEffect(()=>{
-        fetch(url)
-        .then(response => response.json())
+    let [search, setSearch] = useState('');
+    let [showSpinner, setShowSpinner] = useState(false);
+
+    const getNews = ()=>{
+
+        let searchText = search?'&q='+search:'';
+        url = url+searchText;
+        setShowSpinner(true);
+
+        axios.get(url)
         .then((resp)=>{
-            setData(resp.articles);
+            let toastType = resp.data.articles.length > 0?'success':'danger';
+
+            toastShow(`${resp.data.articles.length} Articles loaded`, toastType);
+            setData(resp.data.articles);
+            setShowSpinner(false);
         })
         .catch((e)=>{
-            console.log(e);
+           alert(e);
+           setShowSpinner(false);
         });
-    }, []);
+    };
     
-    console.log(data);
+    const onSubmit = ()=>{
+        getNews();
+    } 
+
+    const noNews = !data || data.length == 0? <CustomCard text='Search to start' />:<Text></Text>;
     
     return(
         <View>
         <Header />
-        {/* <View style={{height:900}}> */}
-             
+        <View>
+          <Form>
+            <Item fixedLabel>
+              <Input placeholder="Search" onChangeText={val=>{setSearch(val)}} />
+              <Button transparent onPress={onSubmit}>
+                <Icon name="search"></Icon>
+              </Button>
+            </Item>
+          </Form>
+        </View>
+
+        {showSpinner?
+        <Spinner />
+        :
         <ScrollView  >
-        
-                {/* <Container> */}
-                    {data.map((res)=>(
-                        <View  key={res.title}>
-                            <CardComp  title={res.title} desc={res.description} />
-                        </View>
-                    ))}
-                {/* </Container> */}
-        </ScrollView>
-      {/* </View> */}
+        {noNews}
+        {data.map((res)=>(
+            <View  key={res.title}>
+                <CardComp navigation={props.navigation} data={res}  title={res.title} desc={res.description} />
+            </View>
+        ))}
+         </ScrollView>
+        }
       </View>
     );
 }

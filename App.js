@@ -18,7 +18,7 @@ import {
   StatusBar,
 } from 'react-native';
 
-import {Button} from 'native-base'
+import {Root} from 'native-base'
 
 import {
   LearnMoreLinks,
@@ -31,9 +31,9 @@ import Header from './src/Components/Header'
 
 const App: () => React$Node = () => {
   return (
-    <>
+    <Root>
       <AppNavigator />
-    </>
+    </Root>
   );
 };
 
